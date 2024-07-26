@@ -25,9 +25,3 @@ export const getRPOrigin = ()=>{
     }
     return process.env.RP_ORIGIN;
 }
-
-export default {
-    rpName: getRPName(),
-    rpId: getRPId(),
-    rpOrigin: getRPOrigin()
-}

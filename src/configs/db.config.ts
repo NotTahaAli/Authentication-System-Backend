@@ -11,8 +11,6 @@ export const getPostgresURL = ()=>{
     return process.env.POSTGRES_URL;
 }
 
-getPostgresURL();
-
 export default {
     getPostgresURL
 }

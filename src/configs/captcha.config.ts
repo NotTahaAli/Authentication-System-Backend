@@ -14,8 +14,3 @@ export const getCaptchaSecret = ()=>{
     }
     return process.env.RECAPTCHA_SECRET;
 }
-
-export default {
-    captchaUrl: getCaptchaURL(),
-    captchaSecret: getCaptchaSecret()
-}

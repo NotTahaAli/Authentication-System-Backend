@@ -6,7 +6,3 @@ export const getJWTSecret = ()=>{
         throw new Error("JWT Secret must be atleast 10 characters.")
     return process.env.JWT_SECRET;
 }
-
-export default {
-    JWTSecret: getJWTSecret(),
-}

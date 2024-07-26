@@ -3,6 +3,8 @@ import { sendMail } from "../mail.util";
 import { getSMTPUser } from "../../configs/smtp.config";
 import { createTestAccount } from "nodemailer";
 
+const maybe = process.env.MAILOSAUR_KEY ? describe : describe.skip;
+
 let client: MailosaurClient | null = null;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED="0"
 beforeAll(async () => {
@@ -13,7 +15,7 @@ beforeAll(async () => {
     const account = await createTestAccount();
 }, 15000)
 
-describe("Sending Email",()=>{
+maybe("Sending Email",()=>{
     it("should send",async()=>{
         if (!client) throw Error("No Client");
         await sendMail(getSMTPUser(),"test@cg86beqr.mailosaur.net","Test Mail", "Test Mail 2");
