@@ -10,7 +10,7 @@ Note: You will also need to get credentials from various services such as Google
 
 1. Clone the repository using `git clone https://github.com/NotTahaAli/Authentication-System-Backend.git`
 2. Run `npm install` to install all necessary packages.
-3. Copy the `.env.template` file and rename to `.env` for server and `.env.test` for automated testing
+3. Copy the `.env.template` file and rename to `.env` for server and `.env.test.template` to `.env.test` for automated testing
 4. Populate the `.env` and `.env.test` files with the necessary environment variables.
     - If you want to run the https server, create a keys folder in the src directory and place "ca.pem" "cert.pem" and "key.pem" from your SSL certificate provider.
     - Leave the CORS URLs empty as the frontend sends all requests through serverside.
