@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import db from "../connector";
+import getDB from "../connector";
 import { Passkey, passkeys } from "../schema/passkeys";
 import { User } from "../schema/users";
 import { AuthenticatorTransportFuture, CredentialDeviceType } from "@simplewebauthn/server/script/deps";
@@ -27,7 +27,7 @@ function parseKey(key: {
 }
 
 async function addPasskeytoDatabase(key: Passkey) {
-    await db.insert(passkeys).values({
+    await getDB().insert(passkeys).values({
         id: key.id,
         public_key: Buffer.from(key.publicKey),
         user_id: key.user.id,
@@ -40,15 +40,15 @@ async function addPasskeytoDatabase(key: Passkey) {
 }
 
 async function updateCounter(key: Passkey, counter: number) {
-    await db.update(passkeys).set({counter}).where(and(eq(passkeys.user_id, key.user.id), eq(passkeys.id, key.id)))
+    await getDB().update(passkeys).set({counter}).where(and(eq(passkeys.user_id, key.user.id), eq(passkeys.id, key.id)))
 }
 
 async function getUnparsedKeysFromUser(user_id: number) {
-    return await db.select().from(passkeys).where(eq(passkeys.user_id, user_id))
+    return await getDB().select().from(passkeys).where(eq(passkeys.user_id, user_id))
 }
 
 async function getUnparsedKey(user_id: number, id: string) {
-    const key = (await db.select().from(passkeys).where(and(eq(passkeys.id, id), eq(passkeys.user_id, user_id)))).at(0)
+    const key = (await getDB().select().from(passkeys).where(and(eq(passkeys.id, id), eq(passkeys.user_id, user_id)))).at(0)
     if (!key) return null;
     return key;
 }
