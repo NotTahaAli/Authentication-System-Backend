@@ -1,6 +1,6 @@
 {
     "version": 2,
-    "buildCommand": "npm run build && npm run migrate",
+    "buildCommand": "npm run migrate",
     "installCommand": "npm install",
     "builds": [
         {
