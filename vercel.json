@@ -13,5 +13,8 @@
             "src": "/(.*)",
             "dest": "dist/index.js"
         }
-    ]
+    ],
+    "git": {
+        "deploymentEnabled": false
+    }
 }
