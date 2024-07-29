@@ -20,7 +20,7 @@ webAuthnRoute.get("/", authenticatedMiddleware, (_req, res) => {
 webAuthnRoute.get("/register/generate-options", authenticatedMiddleware, async (req: AuthenticatedRequest, res, next) => {
     try {
         const options = await getUserWebAuthnOptions(req.user as User)
-        res.setHeader("webauthn_options", createJWT({ challengeOptions: options }, "15m"));
+        res.setHeader("Webauthn-Options", createJWT({ challengeOptions: options }, "15m"));
         sendResponse(res, 200, options);
     } catch (error) {
         if (error && typeof(error) == "object" && !Array.isArray(error) && "status" in error)
@@ -37,7 +37,7 @@ webAuthnRoute.post("/register/verify", authenticatedMiddleware, async (req: Auth
         const { body } = req;
 
         const user = req.user as User;
-        const optionsHeader = req.headers["webauthn_options"]
+        const optionsHeader = req.headers["Webauthn-Options"]
         if (!optionsHeader || typeof (optionsHeader) != "string") {
             throw { status: 400, message: "Options Missing" };
         }
@@ -106,7 +106,7 @@ webAuthnRoute.post("/auth/get-options", async (req, res, next) => {
             })),
         });
 
-        res.setHeader("webauthn_options", createJWT({ authOptions: options, user: {id: user.id} }, "15m"));
+        res.setHeader("Webauthn-Options", createJWT({ authOptions: options, user: {id: user.id} }, "15m"));
         sendResponse(res, 200, options);
     } catch (error) {
         if (error && typeof(error) == "object" && !Array.isArray(error) && "status" in error)
@@ -122,7 +122,7 @@ webAuthnRoute.post("/auth/verify", async (req, res, next) => {
     try {
         const { body } = req;
 
-        const optionsHeader = req.headers["webauthn_options"]
+        const optionsHeader = req.headers["Webauthn-Options"]
         if (!optionsHeader || typeof (optionsHeader) != "string") {
             throw { status: 400, message: "Options Missing" };
         }
