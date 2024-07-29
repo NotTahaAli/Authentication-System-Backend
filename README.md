@@ -21,7 +21,7 @@ Note: You will also need to get credentials from various services such as Google
         CREATE EXTENSION citext;
         ```
 
-        - migrations will automatically run when server starts, please make sure initially database is empty to avoid conflicts.
+        - to migrate to the database use `npm run migrate`
     - Get your Recaptcha Secret and Client ID from [This Link](https://www.google.com/recaptcha/admin/create)
         - Choose Recaptcha V2 and Checkbox.
         - Save the Client ID you will need it when setting up the frontend.
