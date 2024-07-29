@@ -50,12 +50,3 @@ export const getSMTPPass = ()=>{
     }
     return process.env.SMTP_PASS;
 }
-
-export default {
-    smtpService: getSMTPService(),
-    smtpHost: getSMTPHost(),
-    smtpPort: getSMTPPort(),
-    smtpSecure: getSMTPSecure(),
-    smtpUser: getSMTPUser(),
-    smtpPass: getSMTPPass()
-}

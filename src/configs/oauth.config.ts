@@ -4,7 +4,3 @@ export const getOAuthID = ()=>{
     }
     return process.env.OAUTH_CLIENT_ID;
 }
-
-export default {
-    oAuthID: getOAuthID(),
-}

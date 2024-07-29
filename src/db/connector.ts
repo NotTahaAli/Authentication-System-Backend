@@ -41,4 +41,4 @@ export async function migrateDB() {
     await migrate(getDrizzleDB(), { migrationsFolder: "drizzle" })
 };
 
-export default getDrizzleDB();
+export default getDrizzleDB;

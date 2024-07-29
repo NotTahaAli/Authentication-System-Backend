@@ -14,10 +14,4 @@ indexRoute.get("/user", authenticatedMiddleware, async (req: AuthenticatedReques
     sendResponse(res, 200, { username: user?.username, id: user?.id, email: user?.email, verified: user?.verified, twoFactor: user?.twoFactor });
 })
 
-indexRoute.get("/passkey.html", async (req, res, next) => {
-    res
-        .set("Content-Security-Policy", "default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'")
-        .sendFile(__dirname + "/passkey.html");
-})
-
 export default indexRoute;
