@@ -37,7 +37,7 @@ webAuthnRoute.post("/register/verify", authenticatedMiddleware, async (req: Auth
         const { body } = req;
 
         const user = req.user as User;
-        const optionsHeader = req.headers["Webauthn-Options"]
+        const optionsHeader = req.header("Webauthn-Options")
         if (!optionsHeader || typeof (optionsHeader) != "string") {
             throw { status: 400, message: "Options Missing" };
         }
@@ -122,7 +122,7 @@ webAuthnRoute.post("/auth/verify", async (req, res, next) => {
     try {
         const { body } = req;
 
-        const optionsHeader = req.headers["Webauthn-Options"]
+        const optionsHeader = req.header("Webauthn-Options")
         if (!optionsHeader || typeof (optionsHeader) != "string") {
             throw { status: 400, message: "Options Missing" };
         }
