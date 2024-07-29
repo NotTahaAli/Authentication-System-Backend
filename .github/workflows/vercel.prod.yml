@@ -33,7 +33,7 @@ jobs:
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-      - run: cp .vercel/.env.preview.local .env
+      - run: cp .vercel/.env.production.local .env
       - name: Run database migrations
         run: npm run migrate
       - run: rm .env
