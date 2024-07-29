@@ -7,7 +7,8 @@ import connected_accounts from "../../db/functions/connected_accounts";
 import users from "../../db/functions/users";
 import { sendResetMail, sendVerificationMail } from "../../utils/mail.util";
 import { randomInt } from "crypto";
-import { decrypt, encrypt } from "../../utils/rsa.util";
+import { decrypt, encrypt, getKeys } from "../../utils/rsa.util";
+import keys from "../../db/functions/keys";
 jest.mock("../../db/functions/users");
 jest.mock("../../db/functions/connected_accounts");
 jest.mock("../../utils/captcha.util.ts");
@@ -17,10 +18,21 @@ jest.mock("../../utils/mail.util.ts", () => ({
     sendResetMail: jest.fn(async (email: string, user_id: number) => { }),
     send2FAMail: jest.fn(async () => { return randomInt(100000, 999999); })
 }))
+jest.mock('../../db/functions/keys')
+
 let server: Express;
 
 beforeAll(async () => {
     server = linkRoutes(await createApp());
+    const localKeys = await getKeys();
+    (keys.getKey as jest.Mock).mockImplementation(jest.fn(async(type: string)=>{
+        if (type == "public") {
+            return {type, key: localKeys.public_key}
+        } else if (type == "private") {
+            return {type, key: localKeys.private_key}
+        }
+        return null;
+    }));
 })
 
 beforeEach(async () => {
@@ -340,9 +352,13 @@ describe("POST /auth/login", () => {
             .end(function (err, res) {
                 if (err) return done(err);
                 expect(res.headers.twofactorcode).toBeDefined();
-                expect(verifyJWT(decrypt(res.headers.twofactorcode).jwt).twoFactor.userId).toBe(2);
                 expect(res.body.error).toEqual("Need 2FA.");
-                done();
+                decrypt(res.headers.twofactorcode).then(decrypted => {
+                    expect(verifyJWT(decrypted.jwt).twoFactor.userId).toBe(2);
+                    done();
+                }).catch(err => {
+                    done(err);
+                })
             })
     })
 
@@ -431,23 +447,26 @@ describe("POST /auth/two-factor", () => {
     })
 
     it('should return 400 and message=Two Factor Token Invalid. if encrypted header does not have JWT', (done) => {
-        request(server).post("/auth/two-factor")
-            .send({ token: "ABCD", code: 100000 })
-            .set("TwoFactorCode", encrypt({}))
-            .set('Content-Type', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(400)
-            .end(function (err, res) {
-                if (err) return done(err);
-                expect(res.body.error).toEqual("Two Factor Token Invalid.");
-                done();
-            })
+        encrypt({}).then(encrypted => {
+            request(server).post("/auth/two-factor")
+                .send({ token: "ABCD", code: 100000 })
+                .set("TwoFactorCode", encrypted)
+                .set('Content-Type', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(400)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    expect(res.body.error).toEqual("Two Factor Token Invalid.");
+                    done();
+                })
+        }).catch(err => done);
     })
 
     it('should return 400 and message=Two Factor Token Invalid. if encrypted header has wrong JWT', (done) => {
+        encrypt({ jwt: "somestuff" }).then(encrypted => {
         request(server).post("/auth/two-factor")
             .send({ token: "ABCD", code: 100000 })
-            .set("TwoFactorCode", encrypt({ jwt: "somestuff" }))
+            .set("TwoFactorCode", encrypted)
             .set('Content-Type', 'application/json')
             .expect('Content-Type', /json/)
             .expect(400)
@@ -456,12 +475,14 @@ describe("POST /auth/two-factor", () => {
                 expect(res.body.error).toEqual("Two Factor Token Invalid.");
                 done();
             })
+        }).catch(err => done);
     })
 
     it('should return 400 and message=Two Factor Token Invalid. if encrypted header jwt with missing info', (done) => {
+        encrypt({ jwt: createJWT({}) }).then(encrypted => {
         request(server).post("/auth/two-factor")
             .send({ token: "ABCD", code: 100000 })
-            .set("TwoFactorCode", encrypt({ jwt: createJWT({}) }))
+            .set("TwoFactorCode", encrypted)
             .set('Content-Type', 'application/json')
             .expect('Content-Type', /json/)
             .expect(400)
@@ -470,12 +491,14 @@ describe("POST /auth/two-factor", () => {
                 expect(res.body.error).toEqual("Two Factor Token Invalid.");
                 done();
             })
+        }).catch(err => done);
     })
 
     it('should return 404 and message=User not found. if encrypted header jwt user doesnt exist', (done) => {
+        encrypt({ jwt: createJWT({ twoFactor: { userId: 7, code: 502123 } }) }).then(encrypted => {
         request(server).post("/auth/two-factor")
             .send({ token: "ABCD", code: 100000 })
-            .set("TwoFactorCode", encrypt({ jwt: createJWT({ twoFactor: { userId: 7, code: 502123 } }) }))
+            .set("TwoFactorCode", encrypted)
             .set('Content-Type', 'application/json')
             .expect('Content-Type', /json/)
             .expect(404)
@@ -484,12 +507,14 @@ describe("POST /auth/two-factor", () => {
                 expect(res.body.error).toEqual("User not found.");
                 done();
             })
+        }).catch(err => done);
     })
 
     it('should return 400 and message=Invalid Code. if the code entered by user and header dont match', (done) => {
+        encrypt({ jwt: createJWT({ twoFactor: { userId: 2, code: 502123 } }) }).then(encrypted => {
         request(server).post("/auth/two-factor")
             .send({ token: "ABCD", code: 100000 })
-            .set("TwoFactorCode", encrypt({ jwt: createJWT({ twoFactor: { userId: 2, code: 502123 } }) }))
+            .set("TwoFactorCode", encrypted)
             .set('Content-Type', 'application/json')
             .expect('Content-Type', /json/)
             .expect(400)
@@ -498,12 +523,14 @@ describe("POST /auth/two-factor", () => {
                 expect(res.body.error).toEqual("Invalid Code.");
                 done();
             })
+        }).catch(err => done);
     })
 
     it('should return 200 if the code entered by user and header match', (done) => {
+        encrypt({ jwt: createJWT({ twoFactor: { userId: 2, code: 502123 } }) }).then(encrypted => {
         request(server).post("/auth/two-factor")
             .send({ token: "ABCD", code: 502123 })
-            .set("TwoFactorCode", encrypt({ jwt: createJWT({ twoFactor: { userId: 2, code: 502123 } }) }))
+            .set("TwoFactorCode", encrypted)
             .set('Content-Type', 'application/json')
             .expect('Content-Type', /json/)
             .expect(200)
@@ -513,6 +540,7 @@ describe("POST /auth/two-factor", () => {
                 expect(verifyJWT(res.headers.authorization).userId).toBe(2);
                 done();
             })
+        }).catch(err => done);
     })
 })
 
@@ -1015,7 +1043,7 @@ describe("POST /auth/change-password", () => {
 
     it('should return 400 and Invalid Token', (done) => {
         request(server).post("/auth/change-password")
-            .send({code: "a"})
+            .send({ code: "a" })
             .set('Content-Type', 'application/json')
             .expect('Content-Type', /json/)
             .expect(400)
@@ -1029,7 +1057,7 @@ describe("POST /auth/change-password", () => {
     it('should return 400 and Invalid Token', (done) => {
         const code = Buffer.from(createJWT({})).toString("base64url");
         request(server).post("/auth/change-password")
-            .send({code})
+            .send({ code })
             .set('Content-Type', 'application/json')
             .expect('Content-Type', /json/)
             .expect(400)
@@ -1043,7 +1071,7 @@ describe("POST /auth/change-password", () => {
     it('should return 400 and Password is Missing or Invalid', (done) => {
         const code = Buffer.from(createJWT({ resetId: 10 })).toString("base64url");
         request(server).post("/auth/change-password")
-            .send({code})
+            .send({ code })
             .set('Content-Type', 'application/json')
             .expect('Content-Type', /json/)
             .expect(400)

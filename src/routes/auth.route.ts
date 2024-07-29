@@ -103,7 +103,7 @@ authRoute.post("/login", checkCaptchaMiddleware, async (req, res, next) => {
         }
         if (user.twoFactor) {
             const code = await send2FAMail(user.email);
-            res.setHeader("TwoFactorCode", encrypt({jwt: createJWT({twoFactor: {userId: user.id, code: code}}, '15m')}));
+            res.setHeader("TwoFactorCode", await encrypt({jwt: createJWT({twoFactor: {userId: user.id, code: code}}, '15m')}));
             throw {status: 401, message: "Need 2FA."}
         }
         res.setHeader("Authorization", createJWT({ userId: user.id }));
@@ -123,7 +123,7 @@ authRoute.post("/two-factor", checkCaptchaMiddleware, async (req, res, next)=>{
             throw {status: 400, message: "Invalid Code."};
         let decoded: {twoFactor?: {userId?: number, code?: number}} & strippedPayload;
         try {
-            const decrypted = decrypt<{jwt?: string}>(TwoFactorCode);
+            const decrypted = await decrypt<{jwt?: string}>(TwoFactorCode);
             if (!decrypted.jwt)
                 throw new Error();
             decoded = verifyJWT(decrypted.jwt);
