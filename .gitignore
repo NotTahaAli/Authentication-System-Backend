@@ -6,3 +6,5 @@ keys
 .vscode/
 designs/
 DB Diagram.png
+.vercel
+dist/*
