@@ -1,0 +1,264 @@
+{
+    "id": "ff0a0376-cc45-4f4c-abea-0e5b7536fadf",
+    "prevId": "f65386f6-7e1b-4a5c-9ebf-e744af97e097",
+    "version": "7",
+    "dialect": "postgresql",
+    "tables": {
+        "public.connected_accounts": {
+            "name": "connected_accounts",
+            "schema": "",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "serial",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "account_type": {
+                    "name": "account_type",
+                    "type": "account_types",
+                    "typeSchema": "public",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "user_id": {
+                    "name": "user_id",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "data": {
+                    "name": "data",
+                    "type": "jsonb",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "connected_accounts_user_id_users_id_fk": {
+                    "name": "connected_accounts_user_id_users_id_fk",
+                    "tableFrom": "connected_accounts",
+                    "tableTo": "users",
+                    "columnsFrom": [
+                        "user_id"
+                    ],
+                    "columnsTo": [
+                        "id"
+                    ],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {
+                "uniqueConnection": {
+                    "name": "uniqueConnection",
+                    "nullsNotDistinct": false,
+                    "columns": [
+                        "account_type",
+                        "data"
+                    ]
+                }
+            }
+        },
+        "public.keys": {
+            "name": "keys",
+            "schema": "",
+            "columns": {
+                "type": {
+                    "name": "type",
+                    "type": "citext",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "key": {
+                    "name": "key",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
+        },
+        "public.passkeys": {
+            "name": "passkeys",
+            "schema": "",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "public_key": {
+                    "name": "public_key",
+                    "type": "bytea",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "user_id": {
+                    "name": "user_id",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "webauthn_user_id": {
+                    "name": "webauthn_user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "counter": {
+                    "name": "counter",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "device_type": {
+                    "name": "device_type",
+                    "type": "varchar(32)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "backed_up": {
+                    "name": "backed_up",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "transports": {
+                    "name": "transports",
+                    "type": "varchar(255)",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "passkeys_user_id_users_id_fk": {
+                    "name": "passkeys_user_id_users_id_fk",
+                    "tableFrom": "passkeys",
+                    "tableTo": "users",
+                    "columnsFrom": [
+                        "user_id"
+                    ],
+                    "columnsTo": [
+                        "id"
+                    ],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {
+                "passkeys_id_user_id_pk": {
+                    "name": "passkeys_id_user_id_pk",
+                    "columns": [
+                        "id",
+                        "user_id"
+                    ]
+                }
+            },
+            "uniqueConstraints": {
+                "uniqueUserWebAuthn": {
+                    "name": "uniqueUserWebAuthn",
+                    "nullsNotDistinct": false,
+                    "columns": [
+                        "user_id",
+                        "webauthn_user_id"
+                    ]
+                }
+            }
+        },
+        "public.users": {
+            "name": "users",
+            "schema": "",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "serial",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "username": {
+                    "name": "username",
+                    "type": "citext",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "email": {
+                    "name": "email",
+                    "type": "citext",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "password": {
+                    "name": "password",
+                    "type": "char(60)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "verified": {
+                    "name": "verified",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": false
+                },
+                "last_changed": {
+                    "name": "last_changed",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": "now()"
+                },
+                "two_factor": {
+                    "name": "two_factor",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {
+                "users_username_unique": {
+                    "name": "users_username_unique",
+                    "nullsNotDistinct": false,
+                    "columns": [
+                        "username"
+                    ]
+                },
+                "users_email_unique": {
+                    "name": "users_email_unique",
+                    "nullsNotDistinct": false,
+                    "columns": [
+                        "email"
+                    ]
+                }
+            }
+        }
+    },
+    "enums": {
+        "public.account_types": {
+            "name": "account_types",
+            "schema": "public",
+            "values": [
+                "google_sso",
+                "passkey"
+            ]
+        }
+    },
+    "schemas": {},
+    "sequences": {},
+    "_meta": {
+        "columns": {},
+        "schemas": {},
+        "tables": {}
+    }
+}
