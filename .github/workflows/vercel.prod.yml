@@ -37,8 +37,6 @@ jobs:
       - name: Run database migrations
         run: npm run migrate
       - run: rm .env
-      - name: Run database migrations
-        run: npm run migrate
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy Project Artifacts to Vercel
