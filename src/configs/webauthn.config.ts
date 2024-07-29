@@ -20,7 +20,7 @@ export const getRPOrigin = ()=>{
     if (!process.env.RP_ORIGIN) {
         throw new Error("RP Origin Not Configured.");
     }
-    if (!process.env.RP_ORIGIN.match(/^https?:\/\/[^:]+(:\d+)$/i)) {
+    if (!process.env.RP_ORIGIN.match(/^https?:\/\/[^:]+(:\d+)?$/i)) {
         throw new Error("Invalid RP Origin");
     }
     return process.env.RP_ORIGIN;
