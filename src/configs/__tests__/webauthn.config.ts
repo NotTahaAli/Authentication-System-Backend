@@ -76,4 +76,10 @@ describe("Getting relaying party origin", () => {
         expect(getRPOrigin()).toEqual(process.env.RP_ORIGIN);
         done();
     })
+
+    it("should work if origin is valid without port", (done)=>{
+        process.env.RP_ORIGIN = "https://host";
+        expect(getRPOrigin()).toEqual(process.env.RP_ORIGIN);
+        done();
+    })
 })

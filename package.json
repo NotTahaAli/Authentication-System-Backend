@@ -1,6 +1,6 @@
 {
     "name": "authentication-system",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Full Authentication Solution with Sign Up, SSO, Passwordless Entry and more.",
     "author": "Muhammad Taha Ali",
     "private": true,
