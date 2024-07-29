@@ -13,6 +13,7 @@ beforeAll(()=>{
 describe("Getting Keys",()=>{
     it("should make keys folder", ()=>{
         (existsSync as jest.Mock).mockImplementationOnce(()=>false);
+        (existsSync as jest.Mock).mockImplementationOnce(()=>false);
         (mkdirSync as jest.Mock).mockImplementationOnce(()=>{});
         (writeFileSync as jest.Mock).mockImplementationOnce(()=>{});
         (writeFileSync as jest.Mock).mockImplementationOnce(()=>{});

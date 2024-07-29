@@ -9,7 +9,6 @@ function generateKeys() {
 export function getKeys() {
     if (!existsSync('./keys')) {
         mkdirSync("./keys")
-        console.log("Directory Made");
     }
     if (!existsSync('./keys/public_key.pem') || !existsSync('./keys/private_key.pem')) {
         const { public_key, private_key } = generateKeys();
