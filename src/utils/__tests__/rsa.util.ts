@@ -15,30 +15,30 @@ describe("Getting Keys",()=>{
         (existsSync as jest.Mock).mockImplementationOnce(()=>false);
         (mkdirSync as jest.Mock).mockImplementationOnce(()=>{});
         (writeFileSync as jest.Mock).mockImplementationOnce(()=>{});
-        (readFileSync as jest.Mock).mockImplementationOnce(()=>"ABCD");
+        (writeFileSync as jest.Mock).mockImplementationOnce(()=>{});
         getKeys();
         expect(mkdirSync).toHaveBeenCalled();
     })
 
     it("should generate keys if private_key missing", ()=>{
-        if (fs.existsSync("/keys") && fs.existsSync("/keys/private_key.pem"))
-            fs.rmSync("/keys/private_key.pem");
+        if (fs.existsSync("./keys") && fs.existsSync("./keys/private_key.pem"))
+            fs.rmSync("./keys/private_key.pem");
         getKeys();
-        expect(fs.existsSync("/keys/public_key.pem")).toBe(true);
-        expect(fs.existsSync("/keys/private_key.pem")).toBe(true);
+        expect(fs.existsSync("./keys/public_key.pem")).toBe(true);
+        expect(fs.existsSync("./keys/private_key.pem")).toBe(true);
     })
     
     it("should generate keys if public_key missing", ()=>{
-        if (fs.existsSync("/keys") && fs.existsSync("/keys/public_key.pem"))
-            fs.rmSync("/keys/public_key.pem");
+        if (fs.existsSync("./keys") && fs.existsSync("./keys/public_key.pem"))
+            fs.rmSync("./keys/public_key.pem");
         getKeys();
-        expect(fs.existsSync("/keys/public_key.pem")).toBe(true);
-        expect(fs.existsSync("/keys/private_key.pem")).toBe(true);
+        expect(fs.existsSync("./keys/public_key.pem")).toBe(true);
+        expect(fs.existsSync("./keys/private_key.pem")).toBe(true);
     })
     
     it("should get keys from file", ()=>{
-        if (existsSync("/keys") && existsSync("/keys/public_key.pem"))
-            rmSync("/keys/public_key.pem");
+        if (existsSync("./keys") && existsSync("./keys/public_key.pem"))
+            rmSync("./keys/public_key.pem");
         const res1 = getKeys();
         const res2 = getKeys();
         expect(res2).toEqual(res1);

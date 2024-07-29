@@ -7,17 +7,24 @@ function generateKeys() {
 }
 
 export function getKeys() {
-    if (!existsSync('/keys')) {
-        mkdirSync("/keys")
+    if (!existsSync('./keys')) {
+        mkdirSync("./keys")
+        console.log("Directory Made");
     }
-    if (!existsSync('/keys/public_key.pem') || !existsSync('/keys/private_key.pem')) {
+    if (!existsSync('./keys/public_key.pem') || !existsSync('./keys/private_key.pem')) {
         const { public_key, private_key } = generateKeys();
-        writeFileSync("/keys/public_key.pem", public_key, "ascii");
-        writeFileSync("/keys/private_key.pem", private_key, "ascii");
+        writeFileSync("./keys/public_key.pem", public_key, {
+            encoding: "ascii",
+            flag: "w"
+        });
+        writeFileSync("./keys/private_key.pem", private_key, {
+            encoding: "ascii",
+            flag: "w"
+        });
         return { public_key, private_key };
     }
-    const public_key = readFileSync("/keys/public_key.pem", "ascii")
-    const private_key = readFileSync("/keys/private_key.pem", "ascii")
+    const public_key = readFileSync("./keys/public_key.pem", "ascii")
+    const private_key = readFileSync("./keys/private_key.pem", "ascii")
     return { public_key, private_key }
 }
 
